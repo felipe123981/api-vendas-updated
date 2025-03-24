@@ -14,5 +14,5 @@ export default {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
-  verbose: true,
+  //verbose: true,
 }
