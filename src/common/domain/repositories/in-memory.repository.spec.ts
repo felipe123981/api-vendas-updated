@@ -62,11 +62,11 @@ describe('InMemoryRepository unit tests', () => {
 
   it('should throw error when id not found', async () => {
     await expect(sut.findById('fake_id')).rejects.toThrow(
-      new NotFoundError('Model not found using ID fake_id'),
+      new NotFoundError('Model not found with ID: fake_id'),
     )
     const id = randomUUID()
     await expect(sut.findById(id)).rejects.toThrow(
-      new NotFoundError(`Model not found using ID ${id}`),
+      new NotFoundError(`Model not found with ID: ${id}`),
     )
   })
 
