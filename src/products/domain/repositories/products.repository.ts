@@ -2,12 +2,12 @@ import { RepositoryInterface } from '@/common/domain/repositories/repository.int
 import { ProductModel } from '../model/products.model'
 
 export type CreateProductProps = {
-  id: string
+  id?: string
   name: string
   price: number
   quantity: number
-  created_at: Date
-  updated_at: Date
+  created_at?: Date
+  updated_at?: Date
 }
 
 export type ProductId = {
