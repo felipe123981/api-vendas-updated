@@ -1,34 +1,39 @@
-import { BadRequestError } from '@/common/domain/errors/BadRequestError'
-import { ProductsRepository } from '@/products/domain/repositories/products.repository'
+import { BadRequestError } from "@/common/domain/errors/BadRequestError";
+import { ProductsRepository } from "@/products/domain/repositories/products.repository";
+import { inject, injectable } from "tsyringe";
 
 export namespace CreateProductUseCase {
   export type Input = {
-    name: string
-    price: number
-    quantity: number
-  }
+    name: string;
+    price: number;
+    quantity: number;
+  };
 
   export type Output = {
-    id: string
-    name: string
-    price: number
-    quantity: number
-    created_at: Date
-    updated_at: Date
-  }
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    created_at: Date;
+    updated_at: Date;
+  };
 
+  @injectable()
   export class UseCase {
-    constructor(private productRepository: ProductsRepository) {}
+    constructor(
+      @inject("ProductsRepository")
+      private productRepository: ProductsRepository,
+    ) {}
 
     async execute(input: Input): Promise<Output> {
       if (!input.name || input.price <= 0 || input.quantity <= 0) {
-        throw new BadRequestError('Input data not provided or invalid')
+        throw new BadRequestError("Input data not provided or invalid");
       }
 
-      await this.productRepository.conflictingName(input.name)
-      const product = this.productRepository.create(input)
+      await this.productRepository.conflictingName(input.name);
+      const product = this.productRepository.create(input);
 
-      await this.productRepository.insert(product)
+      await this.productRepository.insert(product);
 
       return {
         id: product.id,
@@ -37,7 +42,7 @@ export namespace CreateProductUseCase {
         quantity: product.quantity,
         created_at: product.created_at,
         updated_at: product.updated_at,
-      }
+      };
     }
   }
 }

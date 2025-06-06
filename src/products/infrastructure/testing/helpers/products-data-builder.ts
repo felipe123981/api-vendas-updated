@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker'
-import { ProductModel } from '@/products/domain/model/products.model'
-import { randomUUID } from 'node:crypto'
+import { faker } from "@faker-js/faker";
+import { ProductModel } from "@/products/domain/model/products.model";
+import { randomUUID } from "node:crypto";
 
 export function ProductsDataBuilder(
   props: Partial<ProductModel>,
@@ -14,5 +14,5 @@ export function ProductsDataBuilder(
     quantity: props.quantity ?? 10,
     created_at: props.created_at ?? new Date(),
     updated_at: props.updated_at ?? new Date(),
-  }
+  };
 }
