@@ -19,11 +19,11 @@ export namespace GetProductUseCase {
   export class UseCase {
     constructor(
       @inject("ProductsRepository")
-      private productRepository: ProductsRepository,
+      private productsRepository: ProductsRepository,
     ) {}
 
     async execute(input: Input): Promise<Output> {
-      const product = await this.productRepository.findById(input.id);
+      const product = await this.productsRepository.findById(input.id);
 
       return {
         id: product.id,

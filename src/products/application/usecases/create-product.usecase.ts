@@ -1,6 +1,7 @@
 import { BadRequestError } from "@/common/domain/errors/BadRequestError";
 import { ProductsRepository } from "@/products/domain/repositories/products.repository";
 import { inject, injectable } from "tsyringe";
+import { ProductOutput } from "../dtos/product-output.dto";
 
 export namespace CreateProductUseCase {
   export type Input = {
@@ -9,20 +10,13 @@ export namespace CreateProductUseCase {
     quantity: number;
   };
 
-  export type Output = {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    created_at: Date;
-    updated_at: Date;
-  };
+  export type Output = ProductOutput;
 
   @injectable()
   export class UseCase {
     constructor(
       @inject("ProductsRepository")
-      private productRepository: ProductsRepository,
+      private productsRepository: ProductsRepository,
     ) {}
 
     async execute(input: Input): Promise<Output> {
@@ -30,19 +24,13 @@ export namespace CreateProductUseCase {
         throw new BadRequestError("Input data not provided or invalid");
       }
 
-      await this.productRepository.conflictingName(input.name);
-      const product = this.productRepository.create(input);
+      await this.productsRepository.conflictingName(input.name);
 
-      await this.productRepository.insert(product);
+      const product = this.productsRepository.create(input);
+      const createdProduct: ProductOutput =
+        await this.productsRepository.insert(product);
 
-      return {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: product.quantity,
-        created_at: product.created_at,
-        updated_at: product.updated_at,
-      };
+      return createdProduct;
     }
   }
 }
