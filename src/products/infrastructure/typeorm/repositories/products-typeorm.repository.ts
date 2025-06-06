@@ -7,20 +7,20 @@ import {
   ProductId,
   ProductsRepository,
 } from "@/products/domain/repositories/products.repository";
-import { ILike, In, Repository } from "typeorm";
-import { Product } from "../entities/products.entity";
-import { dataSource } from "@/common/infrastructure/typeorm";
+import { In, ILike } from "typeorm";
 import { NotFoundError } from "@/common/domain/errors/NotFoundError";
 import { ProductModel } from "@/products/domain/model/products.model";
 import { ConflictError } from "@/common/domain/errors/ConflictError";
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class ProductsTypeormRepository implements ProductsRepository {
   sortableFields: string[] = ["name", "created_at"];
-  productsRepository: Repository<Product>;
 
-  constructor() {
-    this.productsRepository = dataSource.getRepository(Product);
-  }
+  constructor(
+    @inject("ProductsDefaultTypeormRepository")
+    private productsRepository,
+  ) {}
 
   async findByName(name: string): Promise<ProductModel> {
     const product = await this.productsRepository.findOneBy({ name });

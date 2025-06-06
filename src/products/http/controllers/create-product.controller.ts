@@ -1,8 +1,5 @@
 import { AppError } from "@/common/domain/errors/AppError";
-import { dataSource } from "@/common/infrastructure/typeorm";
 import { CreateProductUseCase } from "@/products/application/usecases/create-product.usecase";
-import { Product } from "@/products/infrastructure/typeorm/entities/products.entity";
-import { ProductsTypeormRepository } from "@/products/infrastructure/typeorm/repositories/products-typeorm.repository";
 import { Request, Response, NextFunction } from "express";
 import { container } from "tsyringe";
 import { z } from "zod";
@@ -34,10 +31,6 @@ export async function createProductController(
 
   try {
     const { name, price, quantity } = validatedData.data;
-
-    const repository: ProductsTypeormRepository =
-      container.resolve("ProductsRepository");
-    repository.productsRepository = dataSource.getRepository(Product);
 
     const createProductUseCase: CreateProductUseCase.UseCase =
       container.resolve("CreateProductUseCase");
