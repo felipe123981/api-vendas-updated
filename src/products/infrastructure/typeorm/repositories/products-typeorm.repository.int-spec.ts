@@ -9,9 +9,11 @@ import { ProductModel } from "@/products/domain/model/products.model";
 
 describe("ProductsTypeormRepository integration tests", () => {
   let ormRepository: ProductsTypeormRepository;
+  let typeormEntityManager: any;
 
   beforeAll(async () => {
     await testDataSource.initialize();
+    testDataSource.createEntityManager();
   });
 
   afterAll(async () => {
@@ -20,8 +22,9 @@ describe("ProductsTypeormRepository integration tests", () => {
 
   beforeEach(async () => {
     await testDataSource.manager.query("DELETE FROM products");
-    ormRepository = new ProductsTypeormRepository();
-    ormRepository.productsRepository = testDataSource.getRepository(Product);
+    ormRepository = new ProductsTypeormRepository(
+      testDataSource.getRepository(Product),
+    );
   });
 
   describe("findById", () => {

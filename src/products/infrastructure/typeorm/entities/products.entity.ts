@@ -11,7 +11,7 @@ import {
 export class Product implements ProductModel {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-  isUnique: boolean = true;
+  isUnique!: boolean;
 
   @Column("varchar")
   name: string;
