@@ -1,0 +1,1 @@
+import '@/products/infrastructure/container'
