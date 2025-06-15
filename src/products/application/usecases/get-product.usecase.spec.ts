@@ -3,7 +3,6 @@ import { ProductsRepository } from '@/products/domain/repositories/products.repo
 import { GetProductUseCase } from './get-product.usecase'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
 import { NotFoundError } from '@/common/domain/errors/NotFoundError'
-
 describe('GetProductUseCase Unit Tests', () => {
   let sut: GetProductUseCase.UseCase
   let repository: ProductsRepository
