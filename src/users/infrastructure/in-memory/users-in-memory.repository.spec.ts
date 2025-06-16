@@ -1,6 +1,6 @@
 import { NotFoundError } from '@/common/domain/errors/NotFoundError'
 import { UsersInMemoryRepository } from './users-in-memory.repository'
-import { UsersDataBuilder } from '../../testing/helpers/users-data-builder'
+import { UsersDataBuilder } from '../testing/helpers/users-data-builder'
 import { ConflictError } from '@/common/domain/errors/ConflictError'
 describe('UsersInMemoryRepository Unit Tests', () => {
   let sut: UsersInMemoryRepository
