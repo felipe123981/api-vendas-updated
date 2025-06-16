@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { createProductController } from '../controllers/create-product.controller'
 import { getProductController } from '../controllers/get-product.controller'
 import { updateProductController } from '../controllers/update-product.controller'
+import { deleteProductController } from '../controllers/delete-product.controller'
 
 const productsRouter = Router()
 
@@ -87,23 +88,23 @@ productsRouter.post('/', createProductController)
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: string
- *         description: The product ID (UUID)
+ *         required: true
+ *         description: The product ID
  *     responses:
  *       200:
- *         description: The product was successfully retrieved
+ *         description: The product
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Product'
  *       404:
- *         description: Product not found using ID
+ *         description: The product was not found
  */
 productsRouter.get('/:id', getProductController)
 
-/**Add commentMore actions
+/**
  * @swagger
  * /products/{id}:
  *   put:
@@ -137,5 +138,26 @@ productsRouter.get('/:id', getProductController)
  *         description: Name already used on another product
  */
 productsRouter.put('/:id', updateProductController)
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     summary: Delete a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The product ID
+ *     responses:
+ *       204:
+ *         description: The product was successfully deleted
+ *       404:
+ *         description: The product was not found
+ */
+productsRouter.delete('/:id', deleteProductController)
 
 export { productsRouter }
