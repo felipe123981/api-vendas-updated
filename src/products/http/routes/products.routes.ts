@@ -3,6 +3,7 @@ import { createProductController } from '../controllers/create-product.controlle
 import { getProductController } from '../controllers/get-product.controller'
 import { updateProductController } from '../controllers/update-product.controller'
 import { deleteProductController } from '../controllers/delete-product.controller'
+import { searchProductController } from '../controllers/search-product.controller'
 
 const productsRouter = Router()
 
@@ -44,6 +45,37 @@ const productsRouter = Router()
  *         quantity: 100
  *         created_at: 2023-01-01T10:00:00Z
  *         updated_at: 2023-01-01T10:00:00Z
+ *     ProductListResponse:
+ *       type: object
+ *       properties:
+ *         items:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Product'
+ *         total:
+ *           type: integer
+ *           description: Total number of products
+ *         current_page:
+ *           type: integer
+ *           description: Current page number
+ *         last_page:
+ *           type: integer
+ *           description: Last page number
+ *         per_page:
+ *           type: integer
+ *           description: Number of items per page
+ *       example:
+ *         items:
+ *           - id: 06db518e-613b-4a76-8e4f-2e305fe4f68d
+ *             name: Sample Product
+ *             price: 29.99
+ *             quantity: 100
+ *             created_at: 2023-01-01T10:00:00Z
+ *             updated_at: 2023-01-01T10:00:00Z
+ *         total: 150
+ *         current_page: 1
+ *         last_page: 10
+ *         per_page: 15
  */
 
 /**
@@ -159,5 +191,52 @@ productsRouter.put('/:id', updateProductController)
  *         description: The product was not found
  */
 productsRouter.delete('/:id', deleteProductController)
+
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Returns a paginated list of products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve
+ *       - in: query
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *           default: 15
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sort_dir
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Sort direction (asc or desc)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Filter string to search for specific products
+ *     responses:
+ *       200:
+ *         description: A paginated list of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ProductListResponse'
+ */
+productsRouter.get('/', searchProductController)
 
 export { productsRouter }
