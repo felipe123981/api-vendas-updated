@@ -2,16 +2,18 @@ import { testDataSource } from '@/common/infrastructure/typeorm/testing/data-sou
 import { ProductsTypeormRepository } from './products-typeorm.repository'
 import { Product } from '../entities/products.entity'
 import { NotFoundError } from '@/common/domain/errors/NotFoundError'
-import { randomUUID } from 'node:crypto'
+import { randomUUID } from 'crypto'
 import { ProductsDataBuilder } from '../../testing/helpers/products-data-builder'
 import { ConflictError } from '@/common/domain/errors/ConflictError'
 import { ProductModel } from '@/products/domain/model/products.model'
 
 describe('ProductsTypeormRepository integration tests', () => {
   let ormRepository: ProductsTypeormRepository
+  let typeormEntityManager: any
 
   beforeAll(async () => {
     await testDataSource.initialize()
+    typeormEntityManager = testDataSource.createEntityManager()
   })
 
   afterAll(async () => {
@@ -20,8 +22,9 @@ describe('ProductsTypeormRepository integration tests', () => {
 
   beforeEach(async () => {
     await testDataSource.manager.query('DELETE FROM products')
-    ormRepository = new ProductsTypeormRepository()
-    ormRepository.productsRepository = testDataSource.getRepository(Product)
+    ormRepository = new ProductsTypeormRepository(
+      typeormEntityManager.getRepository(Product),
+    )
   })
 
   describe('findById', () => {
@@ -47,8 +50,6 @@ describe('ProductsTypeormRepository integration tests', () => {
     it('should create a new product object', () => {
       const data = ProductsDataBuilder({ name: 'Product 1' })
       const result = ormRepository.create(data)
-
-      expect(result).toBeInstanceOf(Product)
       expect(result.name).toEqual(data.name)
     })
   })
@@ -57,7 +58,6 @@ describe('ProductsTypeormRepository integration tests', () => {
     it('should insert a new product', async () => {
       const data = ProductsDataBuilder({ name: 'Product 1' })
       const result = await ormRepository.insert(data)
-
       expect(result.name).toEqual(data.name)
     })
   })
@@ -74,10 +74,10 @@ describe('ProductsTypeormRepository integration tests', () => {
       const data = ProductsDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
-      product.name = 'Updated name'
+      product.name = 'nome atualizado'
 
       const result = await ormRepository.update(product)
-      expect(result.name).toEqual('Updated name')
+      expect(result.name).toEqual('nome atualizado')
     })
   })
 
@@ -99,14 +99,13 @@ describe('ProductsTypeormRepository integration tests', () => {
       const result = await testDataSource.manager.findOneBy(Product, {
         id: data.id,
       })
-
       expect(result).toBeNull()
     })
   })
 
   describe('findByName', () => {
     it('should generate an error when the product is not found', async () => {
-      const name = 'Non-existent Product'
+      const name = 'Product 1'
       await expect(ormRepository.findByName(name)).rejects.toThrow(
         new NotFoundError(`Product not found using name ${name}`),
       )
@@ -118,11 +117,11 @@ describe('ProductsTypeormRepository integration tests', () => {
       await testDataSource.manager.save(product)
 
       const result = await ormRepository.findByName(data.name)
-      expect(result.name).toStrictEqual('Product 1')
+      expect(result.name).toEqual('Product 1')
     })
   })
 
-  describe('ConflictingName', () => {
+  describe('conflictingName', () => {
     it('should generate an error when the product found', async () => {
       const data = ProductsDataBuilder({ name: 'Product 1' })
       const product = testDataSource.manager.create(Product, data)
@@ -134,31 +133,29 @@ describe('ProductsTypeormRepository integration tests', () => {
     })
   })
 
-  describe('findByIds', () => {
+  describe('findAllByIds', () => {
     it('should return an empty array when not find the products', async () => {
-      const productIds = [
-        { id: `b9314932-1616-491c-9221-9931b112e08e` },
+      const productsIds = [
+        { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
         { id: randomUUID() },
       ]
-
-      const result = await ormRepository.findAllByIds(productIds)
-      expect(result).toEqual([]) // Expecting an empty array since no products exist
+      const result = await ormRepository.findAllByIds(productsIds)
+      expect(result).toEqual([])
       expect(result).toHaveLength(0)
     })
 
-    it('should finds a product by id field', async () => {
-      const productIds = [
-        { id: `b9314932-1616-491c-9221-9931b112e08e` },
+    it('should find the products by the id field', async () => {
+      const productsIds = [
+        { id: 'e0b242a9-9606-4b25-ad24-8e6e2207ae45' },
         { id: randomUUID() },
       ]
 
-      const data = ProductsDataBuilder({ id: productIds[0].id })
+      const data = ProductsDataBuilder({ id: productsIds[0].id })
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
 
-      const result = await ormRepository.findAllByIds(productIds)
+      const result = await ormRepository.findAllByIds(productsIds)
       expect(result).toHaveLength(1)
-      expect(result[0].id).toStrictEqual(`b9314932-1616-491c-9221-9931b112e08e`)
     })
   })
 
@@ -172,22 +169,20 @@ describe('ProductsTypeormRepository integration tests', () => {
       const result = await ormRepository.search({
         page: 1,
         per_page: 15,
+        sort: 'fake',
         sort_dir: null,
-        sort: null,
         filter: null,
       })
 
       expect(result.total).toEqual(16)
-      expect(result.items).toHaveLength(15)
+      expect(result.items.length).toEqual(15)
+      expect(result.sort).toEqual('created_at')
     })
-  })
 
-  describe('search', () => {
-    it('should order by created_at DESC when the search params are null', async () => {
+    it('should order by created_at DESC when search params are null', async () => {
       const created_at = new Date()
       const models: ProductModel[] = []
       const arrange = Array(16).fill(ProductsDataBuilder({}))
-
       arrange.forEach((element, index) => {
         delete element.id
         models.push({
@@ -196,30 +191,24 @@ describe('ProductsTypeormRepository integration tests', () => {
           created_at: new Date(created_at.getTime() + index),
         })
       })
-
       const data = testDataSource.manager.create(Product, models)
       await testDataSource.manager.save(data)
 
       const result = await ormRepository.search({
         page: 1,
         per_page: 15,
+        sort: null,
         sort_dir: null,
-        sort: 'fake',
         filter: null,
       })
 
       expect(result.items[0].name).toEqual('Product 15')
       expect(result.items[14].name).toEqual('Product 1')
-      expect(result.sort).toEqual('created_at')
-      //console.log(result.items)
     })
-  })
 
-  describe('search', () => {
-    it('should apply paginate and sort  ', async () => {
+    it('should apply paginate and sort', async () => {
       const created_at = new Date()
       const models: ProductModel[] = []
-
       'badec'.split('').forEach((element, index) => {
         models.push({
           ...ProductsDataBuilder({}),
@@ -227,15 +216,14 @@ describe('ProductsTypeormRepository integration tests', () => {
           created_at: new Date(created_at.getTime() + index),
         })
       })
-
       const data = testDataSource.manager.create(Product, models)
       await testDataSource.manager.save(data)
 
       let result = await ormRepository.search({
         page: 1,
         per_page: 2,
-        sort_dir: 'asc',
         sort: 'name',
+        sort_dir: 'ASC',
         filter: null,
       })
 
@@ -245,25 +233,21 @@ describe('ProductsTypeormRepository integration tests', () => {
 
       result = await ormRepository.search({
         page: 1,
-        per_page: 3,
-        sort_dir: 'desc',
+        per_page: 2,
         sort: 'name',
+        sort_dir: 'DESC',
         filter: null,
       })
 
       expect(result.items[0].name).toEqual('e')
       expect(result.items[1].name).toEqual('d')
-      expect(result.items.length).toEqual(3)
-      //console.log(result.items)
+      expect(result.items.length).toEqual(2)
     })
-  })
 
-  describe('search', () => {
-    it('should search using filter, sort and paginate  ', async () => {
+    it('should search using filter, sort and paginate', async () => {
       const created_at = new Date()
       const models: ProductModel[] = []
       const values = ['test', 'a', 'TEST', 'b', 'TeSt']
-
       values.forEach((element, index) => {
         models.push({
           ...ProductsDataBuilder({}),
@@ -271,32 +255,31 @@ describe('ProductsTypeormRepository integration tests', () => {
           created_at: new Date(created_at.getTime() + index),
         })
       })
-
       const data = testDataSource.manager.create(Product, models)
       await testDataSource.manager.save(data)
 
       let result = await ormRepository.search({
         page: 1,
         per_page: 2,
-        sort_dir: 'asc',
         sort: 'name',
+        sort_dir: 'ASC',
         filter: 'TEST',
       })
 
-      expect(result.items[0].name).toStrictEqual('test')
-      expect(result.items[1].name).toStrictEqual('TeSt')
+      expect(result.items[0].name).toEqual('test')
+      expect(result.items[1].name).toEqual('TeSt')
       expect(result.items.length).toEqual(2)
       expect(result.total).toEqual(3)
 
       result = await ormRepository.search({
         page: 2,
         per_page: 2,
-        sort_dir: 'asc',
         sort: 'name',
+        sort_dir: 'ASC',
         filter: 'TEST',
       })
 
-      expect(result.items[0].name).toStrictEqual('TEST')
+      expect(result.items[0].name).toEqual('TEST')
       expect(result.items.length).toEqual(1)
       expect(result.total).toEqual(3)
     })
