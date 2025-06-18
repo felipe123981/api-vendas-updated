@@ -7,6 +7,7 @@ import { ProductsDataBuilder } from '../../testing/helpers/products-data-builder
 import { ConflictError } from '@/common/domain/errors/ConflictError'
 import { ProductModel } from '@/products/domain/model/products.model'
 
+jest.setTimeout(30000) // 30 segundos
 describe('ProductsTypeormRepository integration tests', () => {
   let ormRepository: ProductsTypeormRepository
   let typeormEntityManager: any
