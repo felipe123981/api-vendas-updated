@@ -21,7 +21,7 @@ export class User implements UserModel {
   @Column()
   password: string
 
-  @Column()
+  @Column({ default: 'https://github.com/shadcn.png' })
   avatar?: string
 
   @CreateDateColumn()
