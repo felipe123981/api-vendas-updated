@@ -18,7 +18,7 @@ export class UsersTypeormRepository implements UsersRepository {
   sortableFields: string[] = ['name', 'created_at']
 
   constructor(
-    @inject('UsersDefaultTypeormRepository')
+    @inject('UsersDefaultRepositoryTypeorm')
     private usersRepository: Repository<User>,
   ) {}
 

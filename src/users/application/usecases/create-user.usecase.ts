@@ -2,6 +2,7 @@ import { inject, injectable } from 'tsyringe'
 import { UserOutput } from '../dtos/user-output.dtos'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
 import { BadRequestError } from '@/common/domain/errors/BadRequestError'
+import { HashProvider } from '@/common/domain/providers/hash-provider'
 
 export namespace CreateUserUseCase {
   export type Input = {
@@ -17,6 +18,8 @@ export namespace CreateUserUseCase {
     constructor(
       @inject('UsersRepository')
       private usersRepository: UsersRepository,
+      @inject('HashProvider')
+      private hashProvider: HashProvider,
     ) {}
     async execute(input: Input): Promise<Output> {
       if (!input.name || !input.email || !input.password) {
@@ -25,7 +28,12 @@ export namespace CreateUserUseCase {
 
       await this.usersRepository.conflictingEmail(input.email)
 
+      const hashedPassword = await this.hashProvider.generateHash(
+        input.password,
+      )
+
       const user = this.usersRepository.create(input)
+      user.password = hashedPassword
       return this.usersRepository.insert(user)
     }
   }
