@@ -1,4 +1,4 @@
-import { AppError } from '@/common/domain/errors/AppError'
+import { AppError } from '@/common/domain/errors/app-error'
 import 'dotenv/config'
 import { z } from 'zod'
 
@@ -15,12 +15,13 @@ const envSchema = z.object({
   DB_NAME: z.string().default('postgres'),
   DB_USER: z.string().default('postgres'),
   DB_PASS: z.string().default('postgres'),
+  JWT_SECRET: z.string(),
+  JWT_EXPIRES_IN: z.coerce.number().default(86400),
 })
 
 const _env = envSchema.safeParse(process.env)
 
 if (_env.success === false) {
-  //important be exactly at this way
   throw new AppError('Invalid environment variables')
 }
 

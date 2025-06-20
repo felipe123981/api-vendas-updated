@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import { ProductsRepository } from '@/products/domain/repositories/products.repository'
 import { GetProductUseCase } from './get-product.usecase'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
 describe('GetProductUseCase Unit Tests', () => {
   let sut: GetProductUseCase.UseCase
   let repository: ProductsRepository

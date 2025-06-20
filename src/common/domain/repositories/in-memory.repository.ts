@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { NotFoundError } from '../errors/NotFoundError'
+import { NotFoundError } from '../errors/not-found-error'
 import {
   RepositoryInterface,
   SearchInput,

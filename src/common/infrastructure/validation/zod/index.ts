@@ -1,4 +1,4 @@
-import { AppError } from '@/common/domain/errors/AppError'
+import { AppError } from '@/common/domain/errors/app-error'
 
 /**
  * @param schema objeto com schema de validation para o Zod

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { createUserController } from '../controllers/create-user.controller'
+import { searchUserController } from '../controllers/search-user.controller'
 
 const usersRouter = Router()
 
@@ -12,7 +13,7 @@ const usersRouter = Router()
  *       required:
  *         - name
  *         - email
- *         - passowrd
+ *         - password
  *       properties:
  *         id:
  *           type: string
@@ -23,9 +24,9 @@ const usersRouter = Router()
  *         email:
  *           type: string
  *           description: The email of the user
- *         passowrd:
+ *         password:
  *           type: string
- *           description: The passowrd of the user
+ *           description: The password of the user
  *         avatar:
  *           type: string
  *           description: The avatar of the user
@@ -45,6 +46,38 @@ const usersRouter = Router()
  *         avatar: null
  *         created_at: 2023-01-01T10:00:00Z
  *         updated_at: 2023-01-01T10:00:00Z
+ *     UserListResponse:
+ *       type: object
+ *       properties:
+ *         items:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User'
+ *         total:
+ *           type: integer
+ *           description: Total number of users
+ *         current_page:
+ *           type: integer
+ *           description: Current page number
+ *         last_page:
+ *           type: integer
+ *           description: Last page number
+ *         per_page:
+ *           type: integer
+ *           description: Number of items per page
+ *       example:
+ *         items:
+ *           - id: 06db518e-613b-4a76-8e4f-2e305fe4f68d
+ *             name: Sample User
+ *             email: sampleuser@mail.com
+ *             password: $2a$06$tPOF8dcfc5sIvII3NTLQh.QF5sR4iBbgAihVn.l2M07WoDyD7b1Ge
+ *             avatar: null
+ *             created_at: 2023-01-01T10:00:00Z
+ *             updated_at: 2023-01-01T10:00:00Z
+ *         total: 150
+ *         current_page: 1
+ *         last_page: 10
+ *         per_page: 15
  */
 
 /**
@@ -79,5 +112,52 @@ const usersRouter = Router()
  *         description: Email already used on another user
  */
 usersRouter.post('/', createUserController)
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Returns a paginated list of users
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve
+ *       - in: query
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *           default: 15
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sort_dir
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Sort direction (asc or desc)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           default: null
+ *         description: Filter string to search for specific users
+ *     responses:
+ *       200:
+ *         description: A paginated list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserListResponse'
+ */
+usersRouter.get('/', searchUserController)
 
 export { usersRouter }

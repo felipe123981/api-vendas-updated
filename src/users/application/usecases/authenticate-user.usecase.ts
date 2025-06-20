@@ -1,12 +1,11 @@
+import { InvalidCredentialsError } from '@/common/domain/errors/invalid-credentials-error'
+import { HashProvider } from '@/common/domain/providers/hash-provider'
 import { inject, injectable } from 'tsyringe'
 import { UserOutput } from '../dtos/user-output.dtos'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
-import { BadRequestError } from '@/common/domain/errors/bad-request-error'
-import { HashProvider } from '@/common/domain/providers/hash-provider'
 
-export namespace CreateUserUseCase {
+export namespace AuthenticateUserUseCase {
   export type Input = {
-    name: string
     email: string
     password: string
   }
@@ -22,19 +21,21 @@ export namespace CreateUserUseCase {
       private hashProvider: HashProvider,
     ) {}
     async execute(input: Input): Promise<Output> {
-      if (!input.name || !input.email || !input.password) {
-        throw new BadRequestError('Input data not provided or invalid')
+      if (!input.email || !input.password) {
+        throw new InvalidCredentialsError('Invalid credentials')
       }
 
-      await this.usersRepository.conflictingEmail(input.email)
+      const user = await this.usersRepository.findByEmail(input.email)
 
-      const hashedPassword = await this.hashProvider.generateHash(
+      const passwordMatch = await this.hashProvider.compareHash(
         input.password,
+        user.password,
       )
+      if (!passwordMatch) {
+        throw new InvalidCredentialsError('Invalid credentials')
+      }
 
-      const user = this.usersRepository.create(input)
-      user.password = hashedPassword
-      return this.usersRepository.insert(user)
+      return user
     }
   }
 }

@@ -1,10 +1,10 @@
 import { testDataSource } from '@/common/infrastructure/typeorm/testing/data-source'
 import { ProductsTypeormRepository } from '../../typeorm/repositories/products-typeorm.repository'
 import { Product } from '../../typeorm/entities/products.entity'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { randomUUID } from 'crypto'
 import { ProductsDataBuilder } from '../../testing/helpers/products-data-builder'
-import { ConflictError } from '@/common/domain/errors/ConflictError'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
 import { ProductModel } from '@/products/domain/model/products.model'
 
 describe('ProductsTypeormRepository integration tests', () => {

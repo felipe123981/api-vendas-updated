@@ -4,8 +4,8 @@ import { CreateUserUseCase } from './create-user.usecase'
 import { HashProvider } from '@/common/domain/providers/hash-provider'
 import { BcryptjsHashProvider } from '@/common/infrastructure/providers/hash-provider/bcryptjs-hash.provider'
 import { UsersDataBuilder } from '@/users/infrastructure/testing/helpers/users-data-builder'
-import { ConflictError } from '@/common/domain/errors/ConflictError'
-import { BadRequestError } from '@/common/domain/errors/BadRequestError'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
+import { BadRequestError } from '@/common/domain/errors/bad-request-error'
 
 describe('CreateUserUseCase Integration Tests', () => {
   let createUserUseCase: CreateUserUseCase.UseCase

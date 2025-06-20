@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
 import { ProductsDataBuilder } from '@/products/infrastructure/testing/helpers/products-data-builder'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { DeleteProductUseCase } from './delete-product.usecase'
 
 describe('DeleteProductUseCase Unit Tests', () => {

@@ -10,8 +10,9 @@ import {
   SearchOutput,
 } from '@/common/domain/repositories/repository.interface'
 import { UserModel } from '@/users/domain/models/user.model'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
-import { ConflictError } from '@/common/domain/errors/ConflictError'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
+// Update the import path below to match the actual location and filename of ConflictError
+import { ConflictError } from '@/common/domain/errors/conflict-error'
 
 @injectable()
 export class UsersTypeormRepository implements UsersRepository {
@@ -79,7 +80,7 @@ export class UsersTypeormRepository implements UsersRepository {
     const [users, total] = await this.usersRepository.findAndCount({
       ...(props.filter && {
         where: {
-          name: ILike(props.filter),
+          name: ILike(`%${props.filter}%`),
         },
       }),
       order: {

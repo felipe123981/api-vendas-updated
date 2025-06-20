@@ -1,4 +1,4 @@
-import { AppError } from '@/common/domain/errors/AppError'
+import { AppError } from '@/common/domain/errors/app-error'
 import { Request, Response } from 'express'
 import { z } from 'zod'
 import { container } from 'tsyringe'

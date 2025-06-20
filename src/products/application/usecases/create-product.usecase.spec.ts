@@ -1,8 +1,8 @@
 import { ProductsRepository } from '@/products/domain/repositories/products.repository'
 import { CreateProductUseCase } from './create-product.usecase'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
-import { ConflictError } from '@/common/domain/errors/ConflictError'
-import { BadRequestError } from '@/common/domain/errors/BadRequestError'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
+import { BadRequestError } from '@/common/domain/errors/bad-request-error'
 
 describe('CreateProductUseCase', () => {
   let sut: CreateProductUseCase.UseCase

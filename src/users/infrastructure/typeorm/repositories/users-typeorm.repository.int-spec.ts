@@ -2,9 +2,9 @@ import { randomUUID } from 'node:crypto'
 import { testDataSource } from '@/common/infrastructure/typeorm/testing/data-source'
 import { UsersTypeormRepository } from './users-typeorm.repository'
 import { User } from '../entities/users.entity'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { UsersDataBuilder } from '../../testing/helpers/users-data-builder'
-import { ConflictError } from '@/common/domain/errors/ConflictError'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
 import { UserModel } from '@/users/domain/models/user.model'
 
 describe('UsersTypeormRepository integration tests', () => {

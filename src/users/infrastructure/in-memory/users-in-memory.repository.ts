@@ -1,5 +1,5 @@
-import { ConflictError } from '@/common/domain/errors/ConflictError'
-import { NotFoundError } from '@/common/domain/errors/NotFoundError'
+import { ConflictError } from '@/common/domain/errors/conflict-error'
+import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { InMemoryRepository } from '@/common/domain/repositories/in-memory.repository'
 import { UserModel } from '@/users/domain/models/user.model'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
