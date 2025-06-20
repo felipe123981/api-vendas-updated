@@ -3,6 +3,7 @@ import { container } from 'tsyringe'
 import { z } from 'zod'
 import { dataValidation } from '@/common/infrastructure/validation/zod'
 import { AuthenticateUserUseCase } from '@/users/application/usecases/authenticate-user.usecase'
+import { AuthProvider } from '@/common/domain/providers/auth-provider'
 
 export async function authenticateUserController(
   request: Request,
@@ -22,5 +23,9 @@ export async function authenticateUserController(
     password,
   })
 
-  return response.status(200).json(user)
+  const authProvider: AuthProvider = container.resolve('AuthProvider')
+
+  const { access_token } = authProvider.generateAuthKey(user.id)
+
+  return response.status(200).json({ access_token })
 }

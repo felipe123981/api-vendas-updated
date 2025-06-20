@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { createUserController } from '../controllers/create-user.controller'
 import { searchUserController } from '../controllers/search-user.controller'
+import { isAuthenticated } from '@/common/infrastructure/http/middlewares/isAuthenticated'
 
 const usersRouter = Router()
 
@@ -112,6 +113,8 @@ const usersRouter = Router()
  *         description: Email already used on another user
  */
 usersRouter.post('/', createUserController)
+
+usersRouter.use(isAuthenticated)
 
 /**
  * @swagger
