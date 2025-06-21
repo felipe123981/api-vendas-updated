@@ -1,17 +1,30 @@
 import { AppError } from '@/common/domain/errors/app-error'
 import { NextFunction, Request, Response } from 'express'
+import { MulterError } from 'multer'
 
 export function errorHandler(
   err: Error,
   req: Request,
-  resp: Response,
+  res: Response,
   _next: NextFunction,
 ): Response {
   if (err instanceof AppError) {
-    return resp.status(400).json({ error: err.message })
+    return res.status(err.statusCode).json({
+      status: 'error',
+      message: err.message,
+    })
   }
 
-  return resp
+  if (err instanceof MulterError) {
+    return res.status(400).json({
+      status: 'error',
+      message: err.message,
+    })
+  }
+
+  console.error(err)
+
+  return res
     .status(500)
     .json({ status: 'error', message: 'Internal Server Error' })
 }

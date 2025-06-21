@@ -1,7 +1,7 @@
 import { InvalidCredentialsError } from '@/common/domain/errors/invalid-credentials-error'
 import { HashProvider } from '@/common/domain/providers/hash-provider'
 import { inject, injectable } from 'tsyringe'
-import { UserOutput } from '../dtos/user-output.dtos'
+import { UserOutput } from '../dtos/user-output.dto'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
 
 export namespace AuthenticateUserUseCase {
